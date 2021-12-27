@@ -1,0 +1,126 @@
+@model IEnumerable<Application.DTOs.HoaDonDto>
+@{
+    ViewData["Title"] = "MyOrder - User";
+}
+
+@section Stylesheet{
+    <style>
+        .HDhover:hover{
+            background-color: aliceblue;
+        }
+
+        #scroll{
+            overflow: auto;
+            max-height: 800px;
+        }
+    </style>
+}
+
+@section Scripts{
+}
+
+<div class="breacrumb-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-text">
+                        <a asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i> Trang chủ</a>
+                        <span>Đơn hàng của tôi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Section Begin -->
+
+    <!-- Product Shop Section Begin -->
+    <section class="product-shop spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-8 order-2 order-lg-1 produts-sidebar-filter">
+                    <div class="filter-widget">
+                        <h4 class="fw-title">THÔNG TIN CÁ NHÂN</h4>
+                        <ul class="filter-catagories">
+                            <li><a asp-controller="User" asp-action="Detail">Xem thông tin cá nhân</a></li>
+                            <li><a asp-controller="User" asp-action="Edit">Sửa thông tin cá nhân</a></li>
+                            <li><a asp-controller="User" asp-action="EditPass">Sửa mật khẩu</a></li>
+                            <li><a asp-controller="User" asp-action="MyOrder">Đơn hàng của tôi</a></li>
+                            <li><a asp-controller="User" asp-action="LogOut">Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9 order-1 order-lg-2">
+                    <div class="product-show-option">
+                        <div class="row" style="font-weight: bold; font-size: 20px;">
+                            Đơn hàng của tôi
+                        </div>
+                    </div>
+                    <div class="product-list">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="cart-table" id="scroll">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Mã hóa đơn</th>
+                                                <th>Số điện thoại</th>
+                                                <th>Địa chỉ</th>
+                                                <th>Ngày nhận</th>
+                                                <th>Ngày đặt</th>
+                                                <th>Tổng tiền</th>
+                                                <th>Trạng thái</th>
+                                                <th>Xem chi tiết</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="sua_listHD">
+                                            @{
+                                                if(Model != null){
+                                                    foreach(var q in Model){
+                                                        <tr>
+                                                            <td>@q.bill_id</td>
+                                                            <td >@q.phone</td>
+                                                            <td >@q.address</td>
+                                                            @if(q.date_receice != null){
+                                                                var date_receice = @q.date_receice.GetValueOrDefault();
+                                                                <td>@date_receice.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                                            }
+                                                            else{
+                                                                <td>@q.date_receice</td>
+                                                            }
+                                                            <td>@q.date_order.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                                            <td class="p-price first-row">@(String.Format("{0:n0}", q.total)) đ</td>
+                                                            @{
+                                                                switch(@q.status){
+                                                                    case 1: <td>Đang xử lý</td>
+                                                                            break;
+                                                                    case 2: <td>Đang giao hàng</td>
+                                                                            break;
+                                                                    case 3: <td>Đã giao hàng</td>
+                                                                            break;
+                                                                    case 4: <td>Đã hủy đơn hàng</td>
+                                                                            break;
+                                                                    default: break;
+                                                                }
+                                                            }
+                                                            <td><a href='/DetailBill/Index/?bill_id=@q.bill_id' target="_blank"><i class="fa fa-eye"></i></a></td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    @* <div class="loading-more">
+                        <i class="icon_loading"></i>
+                        <a href="#">
+                            Loading More
+                        </a>
+                    </div> *@
+                </div>
+            </div>
+        </div>
+    </section>

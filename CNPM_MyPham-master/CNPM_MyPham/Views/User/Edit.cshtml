@@ -1,0 +1,129 @@
+@model Application.DTOs.UserDtos.EditUserDto;
+@{
+    ViewData["Title"] = "Edit - User";
+}
+
+@section Stylesheet{
+    <style>
+        .field-validation-error {
+            color: red
+        }
+
+        .validation-summary-errors {
+            color: red
+        }
+    </style>
+}
+
+@section Scripts{
+    <script src="~/js/Validate-client/jquery-2.2.0.min.js"></script>
+    <script src="~/js/Validate-client/jquery.validate.min.js"></script>
+    <script src="~/js/Validate-client/jquery.validate.unobtrusive.min.js"></script>
+}
+
+<div class="breacrumb-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-text">
+                    <a asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i> Trang chủ</a>
+                    <span>Sửa thông tin cá nhân</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb Section Begin -->
+<!-- Product Shop Section Begin -->
+<section class="product-shop spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-8 order-2 order-lg-1 produts-sidebar-filter">
+                <div class="filter-widget">
+                    <h4 class="fw-title">THÔNG TIN CÁ NHÂN</h4>
+                    <ul class="filter-catagories">
+                        <li><a asp-controller="User" asp-action="Detail">Xem thông tin cá nhân</a></li>
+                        <li><a asp-controller="User" asp-action="Edit" style="color: #e7ab3c;">Sửa thông tin cá nhân</a></li>
+                        <li><a asp-controller="User" asp-action="EditPass">Sửa mật khẩu</a></li>
+                        <li><a asp-controller="User" asp-action="MyOrder">Đơn hàng của tôi</a></li>
+                        <li><a asp-controller="User" asp-action="LogOut">Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-9 order-1 order-lg-2">
+                <div class="product-show-option">
+                    <div class="row" style="font-weight: bold; font-size: 20px;">
+                        Sửa thông tin cá nhân
+                    </div>
+                </div>
+                <div class="container">
+                    <form action="/User/Edit" method="post">
+                        <div asp-validation-summary="ModelOnly">
+                            @* <span>Danh sách lỗi</span> *@
+                        </div>
+                        <table class="table">
+                            <tbody>
+                                <tr style="display: none;">
+                                    <td>Mã khách hàng</td>
+                                    <td><input asp-for="@Model.user" class="thien-edit-input" readonly></td>
+                                    <td><span asp-validation-for="@Model.user"></span></td>
+                                    @*<td>@Model.full_name</td>*@
+                                </tr>
+                                <tr>
+                                    <td>Họ tên</td>
+                                    <td><input asp-for="@Model.full_name" class="thien-edit-input"></td>
+                                    <td><span asp-validation-for="@Model.full_name"></span></td>
+                                    @*<td>@Model.full_name</td>*@
+                                </tr>
+                                <tr>
+                                    <td>Số điện thoại</td>
+                                    <td><input asp-for="@Model.phone" class="thien-edit-input"></td>
+                                    <td><span asp-validation-for="@Model.phone"></span></td>
+                                    @*<td>@Model.phone</td>*@
+                                </tr>
+                                <tr>
+                                    <td>Thư điện tử</td>
+                                    <td><input asp-for="@Model.mail" class="thien-edit-input"></td>
+                                    <td><span asp-validation-for="@Model.mail"></span></td>
+                                    @*<td>@Model.mail</td>*@
+                                </tr>
+                                <tr>
+                                    <td>Địa chỉ</td>
+                                    <td><input asp-for="@Model.address" class="thien-edit-input"></td>
+                                    <td><span asp-validation-for="@Model.address"></span></td>
+                                    @*<td>@Model.address</td>*@
+                                </tr>
+                                <tr>
+                                    <td>Giới tính</td>
+                                    <td>
+                                        @*<input asp-for="@Model.sex">*@
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                @Html.RadioButtonFor(model => model.sex, "Nam") Nam
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                @Html.RadioButtonFor(model => model.sex, "Nữ") Nữ
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td><span asp-validation-for="@Model.sex"></span></td>
+                                    @*<td>@Model.sex</td>*@
+                                </tr>
+                                <tr>
+                                    <td>Ngày sinh</td>
+                                    <td><input asp-for="@Model.dateborn" class="thien-edit-input"></td>
+                                    <td><span asp-validation-for="@Model.dateborn"></span></td>
+                                    @*<td>@Model.dateborn.ToString("dd/MM/yyyy")</td>*@
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="submit" class="site-btn login-btn">Sửa thông tin</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

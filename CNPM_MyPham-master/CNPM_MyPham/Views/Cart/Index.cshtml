@@ -1,0 +1,396 @@
+﻿@model Application.DTOs.CurrentUserDTO.DonHangDto;
+@{
+    ViewData["Title"] = "Cart";
+}
+
+@section Stylesheet{
+    <style>
+        .left_cart_select {
+            width: 100%;
+            margin: 0 6px 20px 0;
+            height: 40px;
+        }
+    </style>
+}
+
+@section Scripts{
+    <script>
+        $(".nav-menu li").removeClass( "active" );
+        $("#page_cart").addClass("active");
+
+        function CheckOutCart(){
+            this.focus();
+            var address = $("#input_nhapdcnh").val();
+            $.ajax({
+                url : "/Cart/CheckOutCart",
+                type: "POST",
+                dataType: "json",
+                data:{
+                    address: address
+                },
+                async: false,
+                success: function(data){
+                    if(data != 1){
+                        Swal.fire({
+                            type: "error",
+                            title: "Lỗi đặt hàng",
+                            html: data
+                        });
+                    }
+                    else{
+                        Swal.fire({
+                            type: "success",
+                            title: "Đặt hàng thành công"
+                        }).then((result) => {
+                            // layout.js
+                            LoadCartForLayOut();
+                            $("#sua_listSP").html("");
+                            $("#tongsp").html("0");
+                            $("#tongtien").html("0 Đ");
+                        });
+                    }
+                },
+                error: function(e){
+                    Swal.fire({
+                        type: "error",
+                        title: "Lỗi đặt hàng => CheckOutCart",
+                        html: e.responseText
+                    });
+                }
+            });
+        }
+        function onchange_dc(tag){
+            if(tag.value == "dcmacdinh"){
+                $("#intput_dcnh").css("display", "none");
+            }
+            else if(tag.value == "diachi"){
+                $("#intput_dcnh").css("display", "block");
+            }
+        }
+        function RemoveCart(idsp){
+            $.ajax({
+                url : "@Url.Action("RemoveCart")",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    idsp: idsp
+                },
+                async: false,
+                success: function(data){
+                    if(data != null){
+                        location.reload();
+                    }
+                },
+                error: function(e){
+                    alert(e.responseText);
+                }
+            });
+        }
+        function ChangeSL(tag, idsp){
+            var slsp = tag.value;
+            $.ajax({
+                url : "@Url.Action("UpdateSP")",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    idsp: idsp,
+                    slsp: slsp
+                },
+                async: false,
+                success: function(data){
+                    if(data != null){
+                        location.reload();
+                    }
+                },
+                error: function(e){
+                    alert(e.responseText);
+                }
+            });
+        }
+        $(document).ready(function(){
+            $(".inc").click(function(){
+                var idsp = $(this).parent().parent().parent().find("input").val();
+                $.ajax({
+                    url : "@Url.Action("TangSP")",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        idsp: idsp
+                    },
+                    async: false,
+                    success: function(data){
+                        if(data != null){
+                            location.reload();
+                            @* var tongsp = 0;
+                            var tongtien = 0;
+                            var s = "";
+                            for(let i = 0; i < data.length; ++i){
+                                tongsp += data[i].soluong;
+                                tongtien += data[i].soluong * data[i].sp.price;
+                                s += `  <tr>
+                                            <td class="cart-pic first-row"><img src="`+ data[i].sp.img +`" alt=""></td>
+                                            <td class="cart-title first-row">
+                                                <h5>`+ data[i].sp.name +`</h5>
+                                            </td>
+                                            <td class="p-price first-row">`+ data[i].sp.price +` đ</td>
+                                            <td class="qua-col first-row">
+                                                <input type="text" value="`+ data[i].sp.product_id +`" readonly style="display: none;" class="input_none"/>
+                                                <div class="quantity">
+                                                    <div class="pro-qty">
+                                                        <input type="text" value="`+ data[i].soluong +`" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="10">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="total-price first-row">`+ (data[i].sp.price * data[i].soluong) +` đ</td>
+                                            <td class="close-td first-row"><i class="ti-close"></i></td>
+                                        </tr>`;
+                            }
+                            $("#sua_listSP").html(s);
+                            $("#tongsp").html(tongsp);
+                            $("#tongtien").html(tongtien + " đ"); *@
+                        }
+                    },
+                    error: function(e){
+                        alert(e.responseText);
+                    }
+                });
+            });
+            $(".dec").click(function(){
+                var idsp = $(this).parent().parent().parent().find("input").val();
+                $.ajax({
+                    url : "@Url.Action("GiamSP")",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        idsp: idsp
+                    },
+                    async: false,
+                    success: function(data){
+                        if(data != null){
+                            location.reload();
+                            @* var tongsp = 0;
+                            var tongtien = 0;
+                            var s = "";
+                            for(let i = 0; i < data.length; ++i){
+                                tongsp += data[i].soluong;
+                                tongtien += data[i].soluong * data[i].sp.price;
+                                s += `  <tr>
+                                            <td class="cart-pic first-row"><img src="`+ data[i].sp.img +`" alt=""></td>
+                                            <td class="cart-title first-row">
+                                                <h5>`+ data[i].sp.name +`</h5>
+                                            </td>
+                                            <td class="p-price first-row">`+ data[i].sp.price +` đ</td>
+                                            <td class="qua-col first-row">
+                                                <input type="text" value="`+ data[i].sp.product_id +`" readonly style="display: none;" class="input_none"/>
+                                                <div class="quantity">
+                                                    <div class="pro-qty">
+                                                        <input type="text" value="`+ data[i].soluong +`" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="10">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="total-price first-row">`+ (data[i].sp.price * data[i].soluong) +` đ</td>
+                                            <td class="close-td first-row"><i class="ti-close"></i></td>
+                                        </tr>`;
+                            }
+                            $("#sua_listSP").html(s);
+                            $("#tongsp").html(tongsp);
+                            $("#tongtien").html(tongtien + " đ"); *@
+                        }
+                    },
+                    error: function(e){
+                        alert(e.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<!-- Breadcrumb Section Begin -->
+<div class="breacrumb-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-text product-more">
+                    <a asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i> Trang chủ</a>
+                    <span>Giỏ hàng</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb Section Begin -->
+<!-- Shopping Cart Section Begin -->
+<section class="shopping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="cart-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th class="p-name">Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng tiền</th>
+                                <th><i class="ti-close"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody id="sua_listSP">
+                            @{
+                                int tongsp = 0;
+                                long tongtien = 0;
+                                if (Model != null)
+                                {
+                                    foreach (var q in Model.ListSP)
+                                    {
+                                        tongsp += q.soluong;
+                                        tongtien += q.SP.price * q.soluong;
+                                        <tr>
+                                            <td class="cart-pic first-row"><img src="@Url.Content(@q.SP.img)" alt=""></td>
+                                            <td class="cart-title first-row">
+                                                <h5>@q.SP.name</h5>
+                                            </td>
+                                            <td class="p-price first-row">@(String.Format("{0:n0}", q.SP.price)) đ</td>
+                                            <td class="qua-col first-row">
+                                                <input type="text" value="@q.SP.product_id" readonly style="display: none;" class="input_none" />
+                                                <div class="quantity">
+                                                    <div class="pro-qty">
+                                                        <input type="text" value="@q.soluong" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="3" onchange="ChangeSL(this, @q.SP.product_id)">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="total-price first-row">@(String.Format("{0:n0}", q.SP.price*q.soluong)) đ</td>
+                                            <td class="close-td first-row"><i class="ti-close" onclick="RemoveCart(@q.SP.product_id)"></i></td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                            @* <tr>
+                                    <td class="cart-pic first-row"><img src="img/cart-page/product-1.jpg" alt=""></td>
+                                    <td class="cart-title first-row">
+                                        <h5>Pure Pineapple</h5>
+                                    </td>
+                                    <td class="p-price first-row">$60.00</td>
+                                    <td class="qua-col first-row">
+                                        <div class="quantity">
+                                            <div class="pro-qty">
+                                                <input type="text" value="1">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="total-price first-row">$60.00</td>
+                                    <td class="close-td first-row"><i class="ti-close"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="cart-pic"><img src="img/cart-page/product-2.jpg" alt=""></td>
+                                    <td class="cart-title">
+                                        <h5>American lobster</h5>
+                                    </td>
+                                    <td class="p-price">$60.00</td>
+                                    <td class="qua-col">
+                                        <div class="quantity">
+                                            <div class="pro-qty">
+                                                <input type="text" value="1">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="total-price">$60.00</td>
+                                    <td class="close-td"><i class="ti-close"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="cart-pic"><img src="img/cart-page/product-3.jpg" alt=""></td>
+                                    <td class="cart-title">
+                                        <h5>Guangzhou sweater</h5>
+                                    </td>
+                                    <td class="p-price">$60.00</td>
+                                    <td class="qua-col">
+                                        <div class="quantity">
+                                            <div class="pro-qty">
+                                                <input type="text" value="1">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="total-price">$60.00</td>
+                                    <td class="close-td"><i class="ti-close"></i></td>
+                                </tr> *@
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        @* <div class="cart-buttons">
+                                <a href="#" class="primary-btn continue-shop">Continue shopping</a>
+                                <a href="#" class="primary-btn up-cart">Update cart</a>
+                            </div> *@
+                        <div class="discount-coupon">
+                            <h6>Phương thức thanh toán</h6>
+                            <select class="left_cart_select">
+                                <option value="Thanh toán khi nhận hàng">Thanh toán khi nhận hàng</option>
+                                <option value="Thanh toán qua thẻ ngân hàng" disabled="">Thanh toán qua thẻ ngân hàng(Đang xấy dựng)</option>
+                            </select>
+                            @* <form action="#" class="coupon-form">
+                                    <input type="text" placeholder="Enter your codes">
+                                    <button type="submit" class="site-btn coupon-btn">Apply</button>
+                                </form> *@
+                        </div>
+                        <div class="discount-coupon">
+                            <h6>Địa chỉ thanh toán</h6>
+                            <select class="left_cart_select" onchange="onchange_dc(this)" id="thay_doi_dia_chi">
+                                <option value="dcmacdinh">Chọn địa chỉ mặc định của tài khoản để nhận hàng</option>
+                                <option value="diachi">Chọn địa chỉ nhận hàng khác</option>
+                            </select>
+                            <form id="intput_dcnh" style="display: none;">
+                                <input type="text" placeholder="Nhập địa chỉ nhận hàng" class="left_cart_select" id="input_nhapdcnh">
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 offset-lg-4">
+                        <div class="proceed-checkout">
+                            <ul>
+                                <li class="subtotal">Tổng sản phẩm <span id="tongsp">@tongsp</span></li>
+                                <li class="cart-total">Thành tiền <span id="tongtien">@(String.Format("{0:n0}", tongtien)) đ</span></li>
+                            </ul>
+                            <p onclick="CheckOutCart(this)" class="proceed-btn">Thanh toán</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Shopping Cart Section End -->
+<!-- Partner Logo Section Begin -->
+<div class="partner-logo">
+    <div class="container">
+        <div class="logo-carousel owl-carousel">
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-1.png" alt="">
+                </div>
+            </div>
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-2.png" alt="">
+                </div>
+            </div>
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-3.png" alt="">
+                </div>
+            </div>
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-4.png" alt="">
+                </div>
+            </div>
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-5.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Partner Logo Section End -->

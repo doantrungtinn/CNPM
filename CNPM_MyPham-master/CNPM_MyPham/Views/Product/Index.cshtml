@@ -1,0 +1,309 @@
+@model Application.DTOs.SanPhamDto;
+@{
+    ViewData["Title"] = "Product";
+}
+
+@section Stylesheet{
+}
+
+@section Scripts{
+    <script>
+        function ThemSPAjax(idsp){
+            var t = true;
+            var slsp = $("#slsp").val();
+            if(slsp == "NaN" || parseInt(slsp) == 0){
+                alert("Số lượng sản phẩm không phù hợp");
+                return;
+            }
+            $.ajax({
+                url: "@Url.Action("LoadSLSP")",
+                type: "POST",
+                dataType: "text",
+                data: {
+                    idsp: idsp,
+                    slsp: slsp
+                },
+                async: false,
+                success: function (data) {
+                    if(parseInt(data) > 0){
+                        Swal.fire({
+                            type: "error",
+                            title: "Cửa hàng chỉ còn " + data + " sản phẩm"
+                        });
+                        t = false;
+                    }
+                },
+                error: function (e) {
+                    Swal.fire({
+                        type: "error",
+                        title: "Lỗi thêm sản phẩm => ThemSPAjax",
+                        html: e.responseText
+                    });
+                }
+            });
+            if(t){
+                $.ajax({
+                    url: "@Url.Action("ThemSPAjax")",
+                    type: "POST",
+                    dataType: "text",
+                    data: {
+                        idsp: idsp,
+                        slsp: slsp
+                    },
+                    success: function (data) {
+                        Swal.fire({
+                            type: "success",
+                            title : data
+                        }).then((result) => {
+                            // layout.js
+                            LoadCartForLayOut();
+                        });
+                    },
+                    error: function (e) {
+                        Swal.fire({
+                            type: "error",
+                            title: "Lỗi thêm sản phẩm => ThemSPAjax",
+                            html: e.responseText
+                        });
+                    }
+                });
+            }
+            
+            
+        }
+        @* function LoadCartForLayOut(){
+            $.ajax({
+                url: '/Home/LoadCartForLayOut',
+                type: "POST",
+                dataType: "json",
+                data: {
+                },
+                success: function (data) {
+                    var s = "";
+                    var total = 0;
+                    if(data != null){
+                        for(var i = 0; i < data.length; ++i){
+                            console.log(data[i]);
+                            total += parseInt(data[i].sp.price)*parseInt(data[i].soluong);
+                            s += `<tr>
+                                <td class="si-pic"><img src="`+  data[i].sp.img +`" alt=""></td>
+                                <td class="si-text">
+                                    <div class="product-selected">
+                                        <p>`+ data[i].sp.price + `x` + data[i].soluong +`</p>
+                                        <h6>`+ data[i].sp.name +`</h6>
+                                    </div>
+                                </td>
+                                <td class="si-close">
+                                    <i class="ti-close"></i>
+                                </td>
+                            </tr>`;
+                        }
+                        s = '<tbody>' + s + '</tbody>';
+                        document.getElementById("loadcartlayout").innerHTML = s;
+                        s = `<span>Tổng:</span>
+                            <h5>`+ total +` đ</h5>`;
+                        document.getElementById("loadtotalcartlayout").innerHTML = s;
+                        s = `<i class="icon_bag_alt"></i>
+                            <span>`+ total +` đ</span>`;
+                        document.getElementById("suatotaldonhanglayout").innerHTML = s;
+                    }
+                },
+                error: function (e) {
+                    alert(e.responseText);
+                }
+            });
+        } *@
+    </script>
+}
+
+<!-- Breadcrumb Section Begin -->
+    <div class="breacrumb-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-text product-more">
+                        <a asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i> Trang chủ</a>
+                        <a asp-controller="Shop" asp-action="Index">Shop</a>
+                        <span>Detail</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Section Begin -->
+
+    <!-- Product Shop Section Begin -->
+    <section class="product-shop spad page-details">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="product-pic">
+                                <img class="product-big-img" src="@Url.Content(@Model.img)" alt="">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="product-details">
+                                <div class="pd-title">
+                                    <h3>@Model.name</h3>
+                                </div>
+                                <div class="pd-desc">
+                                    <h4>@(String.Format("{0:n0}", @Model.price)) đ</h4>
+                                </div>
+                                <div class="quantity">
+                                    <div class="pro-qty">
+                                        <input type="text" value="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="10" id="slsp">
+                                    </div>
+                                    <a class="primary-btn pd-cart" onclick="ThemSPAjax(@Model.product_id)">Thêm vào giỏ</a>
+                                </div>
+                                <ul class="pd-tags">
+                                    <li><span>THƯƠNG HIỆU</span>: @ViewBag.TH</li>
+                                    <li><span>LOẠI</span>: @ViewBag.LSP</li>
+                                </ul>
+                                <div class="pd-share">
+                                    <div class="p-code">Mã sản phẩm : @Model.product_id</div>
+                                    <br><div class="p-code">Số lượng : @Model.amount</div>
+                                    <div class="pd-social">
+                                        <a href="#"><i class="ti-facebook"></i></a>
+                                        <a href="#"><i class="ti-twitter-alt"></i></a>
+                                        <a href="#"><i class="ti-linkedin"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-tab">
+                        <div class="tab-item-content">
+                            <div class="tab-content">
+                                <div class="tab-pane fade-in active" id="tab-1" role="tabpanel">
+                                    <div class="product-content">
+                                        <h5>Mô tả</h5>
+                                        <p>@Model.description</p>
+                                        <h5>Cách sử dụng</h5>
+                                        <p>@Model.use</p>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Product Shop Section End -->
+
+    <!-- Related Products Section End -->
+    @* <div class="related-products spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <h2>Sản phẩm khác</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="product-item">
+                        <div class="pi-pic">
+                            <img src="~/img/products/women-1.jpg" alt="">
+                            <div class="sale">Sale</div>
+                            <div class="icon">
+                                <i class="icon_heart_alt"></i>
+                            </div>
+                            <ul>
+                                <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
+                                <li class="quick-view"><a href="#">+ Quick View</a></li>
+                                <li class="w-icon"><a href="#"><i class="fa fa-random"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="pi-text">
+                            <div class="catagory-name">Coat</div>
+                            <a href="#">
+                                <h5>Pure Pineapple</h5>
+                            </a>
+                            <div class="product-price">
+                                $14.00
+                                <span>$35.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="product-item">
+                        <div class="pi-pic">
+                            <img src="~/img/products/women-2.jpg" alt="">
+                            <div class="icon">
+                                <i class="icon_heart_alt"></i>
+                            </div>
+                            <ul>
+                                <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
+                                <li class="quick-view"><a href="#">+ Quick View</a></li>
+                                <li class="w-icon"><a href="#"><i class="fa fa-random"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="pi-text">
+                            <div class="catagory-name">Shoes</div>
+                            <a href="#">
+                                <h5>Guangzhou sweater</h5>
+                            </a>
+                            <div class="product-price">
+                                $13.00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="product-item">
+                        <div class="pi-pic">
+                            <img src="~/img/products/women-3.jpg" alt="">
+                            <div class="icon">
+                                <i class="icon_heart_alt"></i>
+                            </div>
+                            <ul>
+                                <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
+                                <li class="quick-view"><a href="#">+ Quick View</a></li>
+                                <li class="w-icon"><a href="#"><i class="fa fa-random"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="pi-text">
+                            <div class="catagory-name">Towel</div>
+                            <a href="#">
+                                <h5>Pure Pineapple</h5>
+                            </a>
+                            <div class="product-price">
+                                $34.00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="product-item">
+                        <div class="pi-pic">
+                            <img src="~/img/products/women-4.jpg" alt="">
+                            <div class="icon">
+                                <i class="icon_heart_alt"></i>
+                            </div>
+                            <ul>
+                                <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
+                                <li class="quick-view"><a href="#">+ Quick View</a></li>
+                                <li class="w-icon"><a href="#"><i class="fa fa-random"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="pi-text">
+                            <div class="catagory-name">Towel</div>
+                            <a href="#">
+                                <h5>Converse Shoes</h5>
+                            </a>
+                            <div class="product-price">
+                                $34.00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> *@
+    <!-- Related Products Section End -->

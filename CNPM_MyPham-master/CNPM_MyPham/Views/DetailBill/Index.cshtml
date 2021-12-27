@@ -1,0 +1,132 @@
+﻿@model IEnumerable<Application.DTOs.ChiTietHoaDonDto>;
+@{
+    ViewData["Title"] = "Detail Bill";
+}
+
+@section Stylesheet{
+    <style>
+        .left_cart_select {
+            width: 100%;
+            margin: 0 6px 20px 0;
+            height: 40px;
+        }
+    </style>
+}
+
+@section Scripts{
+    <script>
+        
+    </script>
+}
+
+<!-- Breadcrumb Section Begin -->
+<div class="breacrumb-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-text product-more">
+                    <a asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i> Trang chủ</a>
+                    <span>Chi tiết đơn hàng</span>
+                    @{
+                        if(ViewBag.MaHD != null){
+                            <span>> Mã hóa đơn @ViewBag.MaHD</span>
+                        }
+                    }
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb Section Begin -->
+<!-- Shopping Cart Section Begin -->
+<section class="shopping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="cart-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th class="p-name">Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sua_listSP">
+                            @{
+                                int tongsp = 0;
+                                long tongtien = 0;
+                                if (Model != null)
+                                {
+                                    foreach (var q in Model)
+                                    {
+                                        tongsp += q.amount;
+                                        tongtien += q.price * q.amount;
+                                        <tr>
+                                            <td class="cart-pic first-row"><img src="@Url.Content(@q.img)" alt=""></td>
+                                            <td class="cart-title first-row">
+                                                <h5>@q.name</h5>
+                                            </td>
+                                            <td class="p-price first-row">@(String.Format("{0:n0}", q.price)) đ</td>
+                                            <td class="qua-col first-row">
+                                                @q.amount
+                                            </td>
+                                            <td class="total-price first-row">@(String.Format("{0:n0}", q.price*q.amount)) đ</td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 offset-lg-4">
+                        <div class="proceed-checkout">
+                            <ul>
+                                <li class="subtotal">Tổng sản phẩm <span id="tongsp">@tongsp</span></li>
+                                <li class="cart-total">Thành tiền <span id="tongtien">@(String.Format("{0:n0}", tongtien)) đ</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Shopping Cart Section End -->
+<!-- Partner Logo Section Begin -->
+<div class="partner-logo">
+    <div class="container">
+        <div class="logo-carousel owl-carousel">
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-1.png" alt="">
+                </div>
+            </div>
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-2.png" alt="">
+                </div>
+            </div>
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-3.png" alt="">
+                </div>
+            </div>
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-4.png" alt="">
+                </div>
+            </div>
+            <div class="logo-item">
+                <div class="tablecell-inner">
+                    <img src="img/logo-carousel/logo-5.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Partner Logo Section End -->
